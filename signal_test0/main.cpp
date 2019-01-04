@@ -1,9 +1,10 @@
-#include <signal.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <sys/syscall.h>
 #include <string.h>
+#include <signal.h>
+#include <linux/pid.h>
 
  
 pid_t task0_pid = 0;
