@@ -4,7 +4,6 @@
 #include <sys/syscall.h>
 #include <string.h>
 #include <signal.h>
-#include <linux/pid.h>
 
  
 pid_t task0_pid = 0;
@@ -12,12 +11,12 @@ pid_t task1_pid = 0;
 
 void signal_process0(int aSigNum, siginfo_t *apSigInfo, void *aUnused)
 {
-	printf("%s 000000 received\n",__func__);
+	printf("%s 000000 received pid %d\n",__func__,syscall(SYS_gettid));
 }
 
 void signal_process1(int aSigNum, siginfo_t *apSigInfo, void *aUnused)
 {
-	printf("%s 111111 received\n",__func__);
+	printf("%s 111111 received pid %d\n",__func__,syscall(SYS_gettid));
 }
 
 
@@ -45,7 +44,7 @@ void signal_init()
     }
 }
 
-
+#if 0
 int apex_irq_send_to_pid(pid_t aPid, int aValue,int signalnum)
 {
 	int lRet = -1;
@@ -77,6 +76,7 @@ int apex_irq_send_to_pid(pid_t aPid, int aValue,int signalnum)
 	}
 	return lRet;
 } 
+#endif
 
 
 void *thread0(void*)
@@ -87,9 +87,10 @@ void *thread0(void*)
 	while(1)
 	{
 		
-		usleep(500*1000);
-		apex_irq_send_to_pid(task0_pid, 0, 62);
-		printf("00000000 send \n");
+		sleep(5);
+//		apex_irq_send_to_pid(task0_pid, 0, 62);
+        kill(task1_pid,62);
+		printf("00000000 send pid %d \n",syscall(SYS_gettid));
 	}
 	
 }
@@ -102,9 +103,10 @@ void *thread1(void*)
 	while(1)
 	{
 		
-		usleep(500*1000);
-		apex_irq_send_to_pid(task1_pid, 0, 63);
-		printf("11111111 send \n");
+		sleep(5);
+//		apex_irq_send_to_pid(task1_pid, 0, 63);
+    //    kill(task0_pid,63);
+		printf("11111111 send pid %d \n",syscall(SYS_gettid));
 	}
 	
 }
